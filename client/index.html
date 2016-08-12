@@ -8,7 +8,8 @@
     <script src="bower_components/backbone/backbone.js"></script>
 
     <script src="data/data.js"></script>
-
+    <script src="env/config.js"></script>
+    <script src="data/parsedata.js"></script>
     <script src="models/SongModel.js"></script>
     <script src="collections/Songs.js"></script>
     <script src="collections/SongQueue.js"></script>
@@ -18,18 +19,47 @@
     <script src="views/LibraryView.js"></script>
     <script src="views/LibraryEntryView.js"></script>
     <script src="views/AppView.js"></script>
+    <script src="views/SongQueueView.js"></script>
+    <script src="views/SongQueueEntryView.js"></script>
+    
 
     <script>
       $(function() {
+
+
+
+
+        var parseData = [];
+        var fetch = function () {
+            $.ajax({
+                url: 'https://api.parse.com/1/classes/songs/',
+                type: 'GET',
+                success: function (data) {
+                    
+
+                    for (var i= 0; i < data.results.length; i ++) {
+                        parseData.push(data.results[i]);
+                    } 
+                    var library = new Songs(parseData); 
+                    var app = new AppModel({library: library});
+                    var appView = new AppView({model: app});
+                    
+                    $('body').append(appView.render());
+                    console.log(parseData);
+                }
+            });
+        };
+        // console.log(parseData);
+        
+        // var parseData = dataStore;
         // set up model objects
-        var library = new Songs(songData);
-        var app = new AppModel({library: library});
-
+        
+        
         // build a view for the top level of the whole app
-        var appView = new AppView({model: app});
-
+        
+        fetch();
         // put the view onto the screen
-        $('body').append(appView.render());
+        
       });
     </script>
   </body>
